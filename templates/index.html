@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web App Xem Giá Vàng, Đô La, Thời Tiết</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1, h2 { color: #333; }
+        .section { margin-bottom: 20px; }
+        img { max-width: 100%; }
+    </style>
+</head>
+<body>
+    <h1>Thông Tin Thị Trường</h1>
+
+    <div class="section">
+        <h2>Giá Vàng</h2>
+        {% if gold.error %}
+            <p>{{ gold.error }}</p>
+        {% else %}
+            <p>Giá vàng hôm nay: {{ gold.price | round(2) }} USD/ounce</p>
+            <p>Cập nhật: {{ gold.timestamp | int | timestamp_to_datetime }}</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>Tỷ Giá Đô La</h2>
+        {% if currency.error %}
+            <p>{{ currency.error }}</p>
+        {% else %}
+            <p>Tỷ giá USD: {{ currency.conversion_rates.VND | round(2) }} VND</p>
+            <p>Cập nhật: {{ currency.time_last_update_utc }}</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>Thời Tiết</h2>
+        {% if weather.error %}
+            <p>{{ weather.error }}</p>
+        {% else %}
+            <p>Thành phố: Hà Nội</p>
+            <p>Nhiệt độ: {{ weather.current_weather.temperature }} °C</p>
+            <p>Thời tiết: 
+                {% if weather.current_weather.weathercode == 0 %}
+                    Trời quang
+                {% elif weather.current_weather.weathercode in [1, 2, 3] %}
+                    Có mây
+                {% elif weather.current_weather.weathercode in [61, 63, 65] %}
+                    Mưa
+                {% else %}
+                    Khác
+                {% endif %}
+            </p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>Biểu Đồ Giá Vàng</h2>
+        <img src="{{ url_for('static', filename='gold_chart.png') }}" alt="Biểu đồ giá vàng">
+    </div>
+</body>
+</html>
